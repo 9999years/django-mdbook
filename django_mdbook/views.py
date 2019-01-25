@@ -39,14 +39,16 @@ class MdBookView(View):
             self.book_root,
             self.config.get('build', {}).get('build-dir', 'book/'))
 
-    def build_book(self) -> Tuple[int, str, str]:
+    def build_book(self, mdbook: str = 'mdbook', args=[]) -> subprocess.CompletedProcess:
         """
         Build the book by running `mdbook build`
-        :return: A tuple of `mdbook`'s return code, stdout, and stderr
+        :param mdbook: Path to the mdbook executable
+        :param args: Other arguments to pass to `mdbook build` before the
+        destination directory
+        :return: The completed process
         """
-        ret = subprocess.run(['mdbook', 'build', self.book_root],
+        return subprocess.run([mdbook, 'build', *args, self.book_root],
                              capture_output=True, text=True)
-        return ret.returncode, ret.stdout, ret.stderr
 
     def get(self, request: HttpRequest, path: str = None) -> HttpResponse:
         if not path:
